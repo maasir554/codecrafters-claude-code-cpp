@@ -5,7 +5,7 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 
-#include <../src/tools.hpp>
+#include "tools.hpp"
 
 using json = nlohmann::json;
 
