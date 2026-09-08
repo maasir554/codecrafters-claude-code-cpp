@@ -40,12 +40,13 @@ int main(int argc, char* argv[]) {
                 {"content", prompt}
             }
         })},
+
         {"tools", json::array({
             {
                 {"type", "function"},
                 {
                     "function", {
-                        {"name", "read"},
+                        {"name", "Read"},
                         {"description", "Read and return the contents of a file"},
                         {
                             "parameters", {
@@ -53,11 +54,9 @@ int main(int argc, char* argv[]) {
                                 {
                                     "properties", {
                                         {
-                                            {
-                                                "file_path", {
-                                                    {"type", "string"},
-                                                    {"description", "the path to the file to read"}
-                                                }
+                                            "file_path", {
+                                                {"type", "string"},
+                                                {"description", "the path to the file to read"}
                                             }
                                         }
                                     }
