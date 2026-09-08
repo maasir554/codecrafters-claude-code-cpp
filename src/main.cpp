@@ -5,6 +5,8 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 
+#include <tools.hpp>
+
 using json = nlohmann::json;
 
 int main(int argc, char* argv[]) {
@@ -42,31 +44,7 @@ int main(int argc, char* argv[]) {
         })},
 
         {"tools", json::array({
-            {
-                {"type", "function"},
-                {
-                    "function", {
-                        {"name", "Read"},
-                        {"description", "Read and return the contents of a file"},
-                        {
-                            "parameters", {
-                                {"type", "object"},
-                                {
-                                    "properties", {
-                                        {
-                                            "file_path", {
-                                                {"type", "string"},
-                                                {"description", "the path to the file to read"}
-                                            }
-                                        }
-                                    }
-                                }
-                            } 
-                        },
-                        {"required", json::array({"file_path"})}
-                    } 
-                }
-            }
+            readTool
         })}
     };
 
