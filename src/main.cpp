@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
         // check if read tool
         if(result["choices"][0]["message"]["tool_calls"][0]["function"]["name"] == "Read") {
             json tool_arg = json::parse(result["choices"][0]["tool_calls"][0]["function"]["name"]["arguments"].get<std::string>());
-            std::string path = tool_arg["file_path"];
+            std::string path = tool_arg["file_path"].get<std::string>();
             readToolUtils::printFile(path);
         }
     }
