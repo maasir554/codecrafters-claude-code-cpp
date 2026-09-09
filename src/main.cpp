@@ -6,6 +6,7 @@
 #include <nlohmann/json.hpp>
 
 #include "tools.hpp"
+#include "read-tool.hpp"
 
 using json = nlohmann::json;
 
@@ -72,8 +73,16 @@ int main(int argc, char* argv[]) {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     std::cerr << "Logs from your program will appear here!" << std::endl;
 
-    // TODO: Uncomment the line below to pass the first stage
-    std::cout << result["choices"][0]["message"]["content"].get<std::string>();
+    // execute tools before printing messages.
+    if(result["choices"][0]["tool_calls"].size() > 0) {
+        // check if read tool
+        if(result["choices"][0]["tool_calls"][0]["function"]["name"] == "Read") {
+            json tool_arg = json::parse(result["choices"][0]["tool_calls"][0]["function"]["name"]["arguments"]);
+            std::string path = tool_arg["file_path"];
+            readToolUtils::printFile(path);
+        }
+    }
+    else std::cout << result["choices"][0]["message"]["content"].get<std::string>();
 
     return 0;
 }
