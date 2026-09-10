@@ -7,6 +7,7 @@
 
 #include "tools.hpp"
 #include "read-tool.hpp"
+#include "write-tool.hpp"
 
 using json = nlohmann::json;
 
@@ -45,7 +46,8 @@ int main(int argc, char* argv[]) {
         })},
 
         {"tools", json::array({
-            readTool
+            ToolDefinitions::getReadTool(),
+            ToolDefinitions::getWriteTool()
         })}
     };
 
@@ -80,9 +82,11 @@ int main(int argc, char* argv[]) {
         request_body["messages"].push_back(
             result["choices"][0]["message"]
         );
-        
+
         for(auto tool_call: result["choices"][0]["message"]["tool_calls"]){
-            if(tool_call["function"]["name"] == "Read") {
+            std::string tool_name = tool_call["function"]["name"].get<std::string>();
+            
+            if( tool_name == "Read") {
                 
                 json tool_arg = json::parse(tool_call["function"]["arguments"].get<std::string>());
                 std::string path = tool_arg["file_path"].get<std::string>();
@@ -92,6 +96,22 @@ int main(int argc, char* argv[]) {
                     {"tool_call_id", tool_call["id"]},
                     {"content", readToolUtils::getFileText(path)}
                 }));
+            }
+
+            else if(tool_name == "Write") {
+                std::string args_txt = tool_call["function"]["arguments"].get<std::string>();
+                json tool_args = json::parse(args_txt);
+                std::string path = tool_args["file_path"];
+                std::string content = tool_args["content"];
+                writeToFile(path, content);
+
+                request_body["messages"].push_back(
+                    json({
+                        {"role", "tool"},
+                        {"tool_call_id", tool_call["id"]},
+                        {"content", "content successfully written."}
+                    })
+                );
             }
     
             else {
