@@ -77,8 +77,9 @@ int main(int argc, char* argv[]) {
     // agent loop:
 
     while(result["choices"][0]["message"]["tool_calls"].size()) {
-        for(auto choice: result["choices"]){
-            if(choice["message"]["tool_calls"][0]["function"]["name"] == "Read") {
+        for(auto tool_call: result["choices"]["message"]["tool_calls"]){
+            if(tool_call["function"]["name"] == "Read") {
+                
                 json tool_arg = json::parse(result["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"].get<std::string>());
                 std::string path = tool_arg["file_path"].get<std::string>();
     
