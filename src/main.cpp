@@ -77,12 +77,16 @@ int main(int argc, char* argv[]) {
     // agent loop:
 
     while(result["choices"][0]["message"]["tool_calls"].size()) {
-        // check if read tool
-        // if(result["choices"][0]["message"]["tool_calls"][0]["function"]["name"] == "Read") {
+
+        if(result["choices"][0]["message"]["tool_calls"][0]["function"]["name"] == "Read") {
+            
             json tool_arg = json::parse(result["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"].get<std::string>());
             std::string path = tool_arg["file_path"].get<std::string>();
-            // readToolUtils::printFile(path);
-            // update the req body
+
+            request_body["messages"].push_back(
+                result["choices"][0]["message"]
+            );
+            
             request_body["messages"].push_back(json({
                 {"role", "tool"},
                 {"tool_call_id", result["choices"][0]["message"]["tool_calls"][0]["id"]},
@@ -99,7 +103,13 @@ int main(int argc, char* argv[]) {
             );
 
             result = json::parse(toolResponse.text);
-        // }
+        }
+
+        else {
+            std::cerr << "Un-handeled tool: ";
+            std::cerr << result["choices"][0]["message"]["tool_calls"][0]["function"]["name"];
+            break;
+        }
     }
     
     std::cout << result["choices"][0]["message"]["content"].get<std::string>();
