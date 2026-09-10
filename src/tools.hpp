@@ -4,7 +4,7 @@ using json = nlohmann::json;
 
 namespace ToolDefinitions {
     json getReadTool() {
-        std::ifstream tool_desc("./src/tool-definitions/read-tool.json");
+        std::ifstream tool_desc("../src/tool-definitions/read-tool.json");
         if(!tool_desc.is_open()) {
             std::cerr << "Error: Unable to open tool desc (read)." << std::endl;
         }
@@ -20,7 +20,7 @@ namespace ToolDefinitions {
     }
 
     json getWriteTool() {
-        std::ifstream tool_desc("./src/tool-definitions/write-tool.json");
+        std::ifstream tool_desc("../src/tool-definitions/write-tool.json");
         if(!tool_desc.is_open()) {
             std::cerr << "Error: Unable to open tool desc. (write)" << std::endl;
         }
