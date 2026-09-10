@@ -46,4 +46,23 @@ namespace ToolDefinitions {
   }
 })tool_json");
     }
+    inline json getBashTool() {
+        return json::parse(R"tool_json({
+  "type": "function",
+  "function": {
+    "name": "Bash",
+    "description": "Execute a shell command",
+    "parameters": {
+      "type": "object",
+      "required": ["command"],
+      "properties": {
+        "command": {
+          "type": "string",
+          "description": "The command to execute"
+        }
+      }
+    }
+  }
+})tool_json");
+    }
 }

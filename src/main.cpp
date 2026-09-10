@@ -8,6 +8,7 @@
 #include "tools.hpp"
 #include "read-tool.hpp"
 #include "write-tool.hpp"
+#include "bash-tool.hpp"
 
 using json = nlohmann::json;
 
@@ -47,7 +48,8 @@ int main(int argc, char* argv[]) {
 
         {"tools", json::array({
             ToolDefinitions::getReadTool(),
-            ToolDefinitions::getWriteTool()
+            ToolDefinitions::getWriteTool(),
+            ToolDefinitions::getBashTool()
         })}
     };
 
@@ -110,6 +112,23 @@ int main(int argc, char* argv[]) {
                         {"role", "tool"},
                         {"tool_call_id", tool_call["id"]},
                         {"content", "content successfully written."}
+                    })
+                );
+            }
+
+            else if(tool_name == "Bash") {
+                std::string args_txt = tool_call["function"]["arguments"].get<std::string>();
+                json tool_args = json::parse(args_txt);
+                std::string command = tool_args["command"].get<std::string>();
+                bashTool::BashResponse bash_res = bashTool::executeCommand(command);
+                request_body.push_back(
+                    json({
+                        {"role", "tool"},
+                        {"tool_call_id", tool_call["id"]},
+                        {"content", {
+                            {"exit_code", bash_res.exit_code},
+                            {"output", bash_res.output}
+                        } }
                     })
                 );
             }
