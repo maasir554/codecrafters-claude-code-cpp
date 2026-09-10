@@ -76,12 +76,11 @@ int main(int argc, char* argv[]) {
     // execute tools before printing messages.
     // agent loop:
 
-    while(result["choices"][0]["message"]["tool_calls"].size()) {
-        
+    while(result["choices"][0]["message"]["tool_calls"].size()) {     
         for(auto tool_call: result["choices"][0]["message"]["tool_calls"]){
             if(tool_call["function"]["name"] == "Read") {
                 
-                json tool_arg = json::parse(result["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"].get<std::string>());
+                json tool_arg = json::parse(tool_call["message"]["tool_calls"][0]["function"]["arguments"].get<std::string>());
                 std::string path = tool_arg["file_path"].get<std::string>();
     
                 request_body["messages"].push_back(
@@ -93,17 +92,6 @@ int main(int argc, char* argv[]) {
                     {"tool_call_id", result["choices"][0]["message"]["tool_calls"][0]["id"]},
                     {"content", readToolUtils::getFileText(path)}
                 }));
-    
-                cpr::Response toolResponse = cpr::Post(
-                    cpr::Url{base_url + "/chat/completions"},
-                    cpr::Header{
-                        {"Authorization", "Bearer " + api_key},
-                        {"Content-Type", "application/json"}
-                    },
-                    cpr::Body{request_body.dump()}
-                );
-    
-                result = json::parse(toolResponse.text);
             }
     
             else {
@@ -111,6 +99,17 @@ int main(int argc, char* argv[]) {
                 std::cerr << result["choices"][0]["message"]["tool_calls"][0]["function"]["name"];
                 break;
             }
+
+            cpr::Response toolResponse = cpr::Post(
+                cpr::Url{base_url + "/chat/completions"},
+                cpr::Header{
+                    {"Authorization", "Bearer " + api_key},
+                    {"Content-Type", "application/json"}
+                },
+                cpr::Body{request_body.dump()}
+            );
+    
+            result = json::parse(toolResponse.text);
         }
     }
     
