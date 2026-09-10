@@ -77,7 +77,8 @@ int main(int argc, char* argv[]) {
     // agent loop:
 
     while(result["choices"][0]["message"]["tool_calls"].size()) {
-        for(json tool_call: result["choices"][0]["message"]["tool_calls"]){
+        
+        for(auto tool_call: result["choices"][0]["message"]["tool_calls"]){
             if(tool_call["function"]["name"] == "Read") {
                 
                 json tool_arg = json::parse(result["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"].get<std::string>());
