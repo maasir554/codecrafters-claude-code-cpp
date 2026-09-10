@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 
     while(result["choices"][0]["message"]["tool_calls"].size()) {
         // check if read tool
-        if(result["choices"][0]["message"]["tool_calls"][0]["function"]["name"] == "Read") {
+        // if(result["choices"][0]["message"]["tool_calls"][0]["function"]["name"] == "Read") {
             json tool_arg = json::parse(result["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"].get<std::string>());
             std::string path = tool_arg["file_path"].get<std::string>();
             // readToolUtils::printFile(path);
@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
             );
 
             result = json::parse(toolResponse.text);
-        }
+        // }
     }
     
     std::cout << result["choices"][0]["message"]["content"].get<std::string>();
