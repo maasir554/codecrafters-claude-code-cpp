@@ -77,38 +77,38 @@ int main(int argc, char* argv[]) {
     // agent loop:
 
     while(result["choices"][0]["message"]["tool_calls"].size()) {
-
-        if(result["choices"][0]["message"]["tool_calls"][0]["function"]["name"] == "Read") {
-            
-            json tool_arg = json::parse(result["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"].get<std::string>());
-            std::string path = tool_arg["file_path"].get<std::string>();
-
-            request_body["messages"].push_back(
-                result["choices"][0]["message"]
-            );
-            
-            request_body["messages"].push_back(json({
-                {"role", "tool"},
-                {"tool_call_id", result["choices"][0]["message"]["tool_calls"][0]["id"]},
-                {"content", readToolUtils::getFileText(path)}
-            }));
-
-            cpr::Response toolResponse = cpr::Post(
-                cpr::Url{base_url + "/chat/completions"},
-                cpr::Header{
-                    {"Authorization", "Bearer " + api_key},
-                    {"Content-Type", "application/json"}
-                },
-                cpr::Body{request_body.dump()}
-            );
-
-            result = json::parse(toolResponse.text);
-        }
-
-        else {
-            std::cerr << "Un-handeled tool: ";
-            std::cerr << result["choices"][0]["message"]["tool_calls"][0]["function"]["name"];
-            break;
+        for(auto choice: result["choices"]){
+            if(choice["message"]["tool_calls"][0]["function"]["name"] == "Read") {
+                json tool_arg = json::parse(result["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"].get<std::string>());
+                std::string path = tool_arg["file_path"].get<std::string>();
+    
+                request_body["messages"].push_back(
+                    result["choices"][0]["message"]
+                );
+                
+                request_body["messages"].push_back(json({
+                    {"role", "tool"},
+                    {"tool_call_id", result["choices"][0]["message"]["tool_calls"][0]["id"]},
+                    {"content", readToolUtils::getFileText(path)}
+                }));
+    
+                cpr::Response toolResponse = cpr::Post(
+                    cpr::Url{base_url + "/chat/completions"},
+                    cpr::Header{
+                        {"Authorization", "Bearer " + api_key},
+                        {"Content-Type", "application/json"}
+                    },
+                    cpr::Body{request_body.dump()}
+                );
+    
+                result = json::parse(toolResponse.text);
+            }
+    
+            else {
+                std::cerr << "Un-handeled tool: ";
+                std::cerr << result["choices"][0]["message"]["tool_calls"][0]["function"]["name"];
+                break;
+            }
         }
     }
     
