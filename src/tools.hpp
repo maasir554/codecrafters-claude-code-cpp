@@ -2,7 +2,6 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-
 namespace ToolDefinitions {
     json getReadTool() {
         std::ifstream write_tool("./tool-definitions/read-tool.json");

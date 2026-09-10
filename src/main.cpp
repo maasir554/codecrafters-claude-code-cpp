@@ -101,8 +101,8 @@ int main(int argc, char* argv[]) {
             else if(tool_name == "Write") {
                 std::string args_txt = tool_call["function"]["arguments"].get<std::string>();
                 json tool_args = json::parse(args_txt);
-                std::string path = tool_args["file_path"];
-                std::string content = tool_args["content"];
+                std::string path = tool_args["file_path"].get<std::string>();
+                std::string content = tool_args["content"].get<std::string>();
                 writeToFile(path, content);
 
                 request_body["messages"].push_back(
