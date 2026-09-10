@@ -125,10 +125,10 @@ int main(int argc, char* argv[]) {
                     json({
                         {"role", "tool"},
                         {"tool_call_id", tool_call["id"]},
-                        {"content", {
+                        {"content", json({
                             {"exit_code", bash_res.exit_code},
                             {"output", bash_res.output}
-                        } }
+                        }).dump()}
                     })
                 );
             }
