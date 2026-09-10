@@ -99,18 +99,17 @@ int main(int argc, char* argv[]) {
                 std::cerr << result["choices"][0]["message"]["tool_calls"][0]["function"]["name"];
                 break;
             }
-
-            cpr::Response toolResponse = cpr::Post(
-                cpr::Url{base_url + "/chat/completions"},
-                cpr::Header{
-                    {"Authorization", "Bearer " + api_key},
-                    {"Content-Type", "application/json"}
-                },
-                cpr::Body{request_body.dump()}
-            );
-    
-            result = json::parse(toolResponse.text);
         }
+        cpr::Response toolResponse = cpr::Post(
+            cpr::Url{base_url + "/chat/completions"},
+            cpr::Header{
+                {"Authorization", "Bearer " + api_key},
+                {"Content-Type", "application/json"}
+            },
+            cpr::Body{request_body.dump()}
+        );
+
+        result = json::parse(toolResponse.text);
     }
     
     std::cout << result["choices"][0]["message"]["content"].get<std::string>();
