@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
                 json tool_args = json::parse(args_txt);
                 std::string command = tool_args["command"].get<std::string>();
                 bashTool::BashResponse bash_res = bashTool::executeCommand(command);
-                request_body.push_back(
+                request_body["messages"].push_back(
                     json({
                         {"role", "tool"},
                         {"tool_call_id", tool_call["id"]},
