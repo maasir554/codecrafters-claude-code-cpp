@@ -6,7 +6,7 @@ namespace ToolDefinitions {
     json getReadTool() {
         std::ifstream write_tool("./tool-definitions/read-tool.json");
         if(!write_tool.is_open()) {
-            std::cerr << "Error: Unable to open the file." << std::endl;
+            std::cerr << "Error: Unable to open tool desc (read)." << std::endl;
         }
 
         std::stringstream buffer;
@@ -22,7 +22,7 @@ namespace ToolDefinitions {
     json getWriteTool() {
         std::ifstream write_tool("./tool-definitions/write-tool.json");
         if(!write_tool.is_open()) {
-            std::cerr << "Error: Unable to open the file." << std::endl;
+            std::cerr << "Error: Unable to open tool desc. (write)" << std::endl;
         }
 
         std::stringstream buffer;
