@@ -15,4 +15,18 @@ namespace readToolUtils {
             std::cerr << "Error: Unable to open the file." << std::endl;
         }
     }
+
+    std::string getFileText(std::string path) {
+        std::ifstream file_buff(path);
+
+        if(!file_buff.is_open()) {
+            std::cerr << "Error: Unable to open the file." << std::endl;
+        }
+        std::stringstream buffer;
+        buffer << file_buff.rdbuf();
+        std::string ans = buffer.str();
+        file_buff.close();
+        return ans;
+
+    }
 };
