@@ -77,6 +77,10 @@ int main(int argc, char* argv[]) {
     // agent loop:
 
     while(result["choices"][0]["message"]["tool_calls"].size()) {     
+        request_body["messages"].push_back(
+            result["choices"][0]["message"]
+        );
+        
         for(auto tool_call: result["choices"][0]["message"]["tool_calls"]){
             if(tool_call["function"]["name"] == "Read") {
                 
@@ -96,10 +100,6 @@ int main(int argc, char* argv[]) {
                 break;
             }
         }
-        
-        request_body["messages"].push_back(
-            result["choices"][0]["message"]
-        );
         
         cpr::Response toolResponse = cpr::Post(
             cpr::Url{base_url + "/chat/completions"},
