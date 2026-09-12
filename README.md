@@ -1,4 +1,4 @@
-# Coding Agent in C++
+# A Coding Agent written in C++
 
 I followed codecrafters "Build your own Claude Code" track to build this.
 Amazing experience so far, It was difficult to follow this with C++m but anyways a great learning experience.

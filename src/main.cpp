@@ -1,9 +1,4 @@
-#include <cstdlib>
-#include <iostream>
-#include <string>
-
-#include <cpr/cpr.h>
-#include <nlohmann/json.hpp>
+#include "base.hpp"
 
 #include "tools.hpp"
 #include "read-tool.hpp"
@@ -37,7 +32,7 @@ int main(int argc, char* argv[]) {
     }
 
     json request_body = {
-        {"model", "anthropic/claude-haiku-4.5"},
+        {"model", "cohere/north-mini-code:free"},
         
         {"messages", json::array({
             {
@@ -64,6 +59,7 @@ int main(int argc, char* argv[]) {
 
     if (response.status_code != 200) {
         std::cerr << "HTTP error: " << response.status_code << std::endl;
+        std::cerr << "Details: " << response.text << std::endl;
         return 1;
     }
 
