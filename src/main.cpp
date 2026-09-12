@@ -1,13 +1,16 @@
 #include "base.hpp"
 
 #include "tools.hpp"
-#include "read-tool.hpp"
-#include "write-tool.hpp"
+#include "agent-tools/read-tool.cpp"
+#include "agent-tools/write-tool.cpp"
 #include "bash-tool.hpp"
 
 using json = nlohmann::json;
 
 int main(int argc, char* argv[]) {
+    ReadTool read_tool;
+    WriteTool write_tool;
+
     if (argc < 3 || std::string(argv[1]) != "-p") {
         std::cerr << "Expected first argument to be '-p'" << std::endl;
         return 1;
@@ -42,7 +45,7 @@ int main(int argc, char* argv[]) {
         })},
 
         {"tools", json::array({
-            ToolDefinitions::getReadTool(),
+            read_tool.definition(),
             ToolDefinitions::getWriteTool(),
             ToolDefinitions::getBashTool()
         })}
@@ -87,27 +90,31 @@ int main(int argc, char* argv[]) {
             if( tool_name == "Read") {
                 
                 json tool_arg = json::parse(tool_call["function"]["arguments"].get<std::string>());
-                std::string path = tool_arg["file_path"].get<std::string>();
                 
+                ToolResult tr = read_tool.execute(tool_arg);
+
+                if(!tr.success) std::cerr << "TOOL FAIL: read\n"; 
+
                 request_body["messages"].push_back(json({
                     {"role", "tool"},
                     {"tool_call_id", tool_call["id"]},
-                    {"content", readToolUtils::getFileText(path)}
+                    {"content", tr.content}
                 }));
             }
 
             else if(tool_name == "Write") {
-                std::string args_txt = tool_call["function"]["arguments"].get<std::string>();
-                json tool_args = json::parse(args_txt);
-                std::string path = tool_args["file_path"].get<std::string>();
-                std::string content = tool_args["content"].get<std::string>();
-                writeToFile(path, content);
+                json tool_args = json::parse(tool_call["function"]["arguments"].get<std::string>());
+
+
+                ToolResult tr = write_tool.execute(tool_args);
+
+                if(!tr.success) std::cout << "TOOL FAIL: Write\n";
 
                 request_body["messages"].push_back(
                     json({
                         {"role", "tool"},
                         {"tool_call_id", tool_call["id"]},
-                        {"content", "content successfully written."}
+                        {"content", tr.content}
                     })
                 );
             }

@@ -7,8 +7,8 @@ private:
 
 public:
     WriteTool() {
-        _name = "Write";
-        _definition = json::parse(
+        this->_name = "Write";
+        this->_definition = json::parse(
             R"tool_json({
                 "type": "function",
                 "function": {
@@ -29,15 +29,15 @@ public:
         );
     }
 
-    std::string name() {
+    std::string name() const override {
         return _name;
     }
 
-    std::string definition() {
+    json definition() const override {
         return _definition;
     }
 
-    ToolResult execute(json& arguments) {
+    ToolResult execute(json& arguments) override {
         ToolResult ans;
 
         std::string path = arguments["file_path"].get<std::string>();

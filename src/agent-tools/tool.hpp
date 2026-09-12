@@ -1,5 +1,5 @@
 #pragma once
-#include "base.hpp"
+#include "../base.hpp"
 
 /**
 * @interface Tool
@@ -15,3 +15,5 @@ public:
     virtual json definition() const = 0;
     virtual ToolResult execute(json& arguments) = 0;
 };
+
+

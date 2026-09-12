@@ -30,15 +30,15 @@ public:
         );
     }
 
-    std::string name() {
+    std::string name() const override {
         return _name;
     }
 
-    json definition(){
+    json definition() const override {
          return _definition;
     }
 
-    ToolResult execute(json& arguments) {
+    ToolResult execute(json& arguments) override {
         ToolResult ans;
 
         std::string path = arguments["file_path"].get<std::string>();
@@ -60,6 +60,8 @@ public:
 
         ans.success = true;
         ans.content = response;
+
+        // std::cout << "Read Tool Response: " << response << std::endl;
 
         return ans;
     };
