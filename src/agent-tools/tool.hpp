@@ -13,5 +13,5 @@ public:
 
     virtual std::string name() const = 0;
     virtual json definition() const = 0;
-    virtual ToolResult execute(json& arguments);
+    virtual ToolResult execute(json& arguments) = 0;
 };

@@ -1,16 +1,15 @@
-#include "base.hpp"
 #include "tool.hpp"
 
 class ReadTool: public Tool {
 private:
-    std::string tool_name;
-    json tool_definition;
+    std::string _name;
+    json _definition;
 
 public:
     ReadTool() {
-        this->tool_name = "Read";
+        this->_name = "Read";
 
-        this->tool_definition = json::parse(
+        this->_definition = json::parse(
             R"tool_json({
                 "type": "function",
                 "function": {
@@ -32,17 +31,18 @@ public:
     }
 
     std::string name() {
-        return tool_name;
+        return _name;
     }
 
     json definition(){
-         return tool_definition;
+         return _definition;
     }
 
     ToolResult execute(json& arguments) {
         ToolResult ans;
 
-        std::string path = arguments["file_path"];
+        std::string path = arguments["file_path"].get<std::string>();
+        
         std::ifstream file_buff(path);
         if(!file_buff.is_open()) {
             std::cerr << "Unable to open file at path:\n";
