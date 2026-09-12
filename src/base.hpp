@@ -7,3 +7,8 @@
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
+
+struct ToolResult {
+    bool        success;
+    std::string content;
+};
