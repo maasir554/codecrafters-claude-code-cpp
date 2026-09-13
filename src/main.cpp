@@ -1,5 +1,4 @@
 #include "base.hpp"
-
 #include "agent-tools/all-tools.hpp"
 
 using json = nlohmann::json;
@@ -23,6 +22,7 @@ int main(int argc, char* argv[]) {
 
     const char* api_key_env = std::getenv("OPENROUTER_API_KEY");
     const char* base_url_env = std::getenv("OPENROUTER_BASE_URL");
+    const char* ai_model_id = std::getenv("BLAZECODE_MODEL_ID"); // maybe i'll name it blaze code
 
     std::string api_key = api_key_env ? api_key_env : "";
     std::string base_url = base_url_env ? base_url_env : "https://openrouter.ai/api/v1";
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
     }
 
     json request_body = {
-        {"model", "gemini-3.5-flash-lite"},
+        {"model", ai_model_id ? ai_model_id : "gemini-3.5-flash-lite"},
         
         {"messages", json::array({
             {
