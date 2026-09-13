@@ -15,5 +15,3 @@ public:
     virtual json definition() const = 0;
     virtual ToolResult execute(json& arguments) = 0;
 };
-
-
