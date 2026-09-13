@@ -3,6 +3,8 @@
 #include "tools.hpp"
 #include "agent-tools/read-tool.cpp"
 #include "agent-tools/write-tool.cpp"
+#include "agent-tools/bash-tool.cpp"
+
 #include "bash-tool.hpp"
 
 using json = nlohmann::json;
@@ -10,6 +12,7 @@ using json = nlohmann::json;
 int main(int argc, char* argv[]) {
     ReadTool read_tool;
     WriteTool write_tool;
+    BashTool bash_tool;
 
     if (argc < 3 || std::string(argv[1]) != "-p") {
         std::cerr << "Expected first argument to be '-p'" << std::endl;
@@ -46,8 +49,8 @@ int main(int argc, char* argv[]) {
 
         {"tools", json::array({
             read_tool.definition(),
-            ToolDefinitions::getWriteTool(),
-            ToolDefinitions::getBashTool()
+            write_tool.definition(),
+            bash_tool.definition()
         })}
     };
 
@@ -86,61 +89,35 @@ int main(int argc, char* argv[]) {
 
         for(auto tool_call: result["choices"][0]["message"]["tool_calls"]){
             std::string tool_name = tool_call["function"]["name"].get<std::string>();
-            
+            json tool_args = json::parse(tool_call["function"]["arguments"].get<std::string>());
+            ToolResult tr;
+            tr.content = "Unhandeled Tool";
+            tr.success = false;
+
             if( tool_name == "Read") {
-                
-                json tool_arg = json::parse(tool_call["function"]["arguments"].get<std::string>());
-                
-                ToolResult tr = read_tool.execute(tool_arg);
-
+                tr = read_tool.execute(tool_args);
                 if(!tr.success) std::cerr << "TOOL FAIL: read\n"; 
-
-                request_body["messages"].push_back(json({
-                    {"role", "tool"},
-                    {"tool_call_id", tool_call["id"]},
-                    {"content", tr.content}
-                }));
             }
-
             else if(tool_name == "Write") {
-                json tool_args = json::parse(tool_call["function"]["arguments"].get<std::string>());
-
-
-                ToolResult tr = write_tool.execute(tool_args);
-
+                tr = write_tool.execute(tool_args);
                 if(!tr.success) std::cout << "TOOL FAIL: Write\n";
-
-                request_body["messages"].push_back(
-                    json({
-                        {"role", "tool"},
-                        {"tool_call_id", tool_call["id"]},
-                        {"content", tr.content}
-                    })
-                );
             }
-
             else if(tool_name == "Bash") {
-                std::string args_txt = tool_call["function"]["arguments"].get<std::string>();
-                json tool_args = json::parse(args_txt);
-                std::string command = tool_args["command"].get<std::string>();
-                bashTool::BashResponse bash_res = bashTool::executeCommand(command);
-                request_body["messages"].push_back(
-                    json({
-                        {"role", "tool"},
-                        {"tool_call_id", tool_call["id"]},
-                        {"content", json({
-                            {"exit_code", bash_res.exit_code},
-                            {"output", bash_res.output}
-                        }).dump()}
-                    })
-                );
+                tr = write_tool.execute(tool_args);
             }
-    
             else {
                 std::cerr << "Un-handeled tool: ";
                 std::cerr << tool_call["function"]["name"];
                 break;
             }
+
+            request_body["messages"].push_back(
+                json({
+                    {"role", "tool"},
+                    {"tool_call_id", tool_call["id"]},
+                    {"content", tr.content}
+                })
+            );
         }
         
         cpr::Response toolResponse = cpr::Post(

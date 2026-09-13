@@ -7,26 +7,31 @@ private:
 
 public:
     WriteTool() {
-        this->_name = "Write";
-        this->_definition = json::parse(
+        _definition = json::parse(
             R"tool_json({
                 "type": "function",
                 "function": {
-                    "name": "Read",
-                    "description": "Read and return the contents of a file",
+                    "name": "Write",
+                    "description": "Write content to a file",
                     "parameters": {
                         "type": "object",
+                        "required": ["file_path","content"],
                         "properties": {
                             "file_path": {
-                            "type": "string",
-                            "description": "The path to the file to read"
+                                "type": "string",
+                                "description": "The path to the file to write to"
+                            },
+                            "content": {
+                                "type": "string",
+                                "description": "The content to write to the file"
                             }
                         },
-                        "required": ["file_path"]
                     }
                 }
             })tool_json"
         );
+        
+        _name = _definition.get<std::string>();
     }
 
     std::string name() const override {
@@ -43,7 +48,7 @@ public:
         std::string path = arguments["file_path"].get<std::string>();
         std::string content = arguments["content"].get<std::string>();
 
-        std::ofstream output_file(path);
+        std::ofstream output_file(path); // note: prev data will be erased at time of opening pre-exisiting a file.
 
         if(!output_file.is_open()) {
             std::cerr << "Unable to open the file to write\n";
