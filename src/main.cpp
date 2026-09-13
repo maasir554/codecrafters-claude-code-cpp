@@ -1,11 +1,6 @@
 #include "base.hpp"
 
-#include "tools.hpp"
-#include "agent-tools/read-tool.cpp"
-#include "agent-tools/write-tool.cpp"
-#include "agent-tools/bash-tool.cpp"
-
-#include "bash-tool.hpp"
+#include "agent-tools/all-tools.hpp"
 
 using json = nlohmann::json;
 
@@ -38,7 +33,7 @@ int main(int argc, char* argv[]) {
     }
 
     json request_body = {
-        {"model", "cohere/north-mini-code:free"},
+        {"model", "gemini-3.5-flash-lite"},
         
         {"messages", json::array({
             {
@@ -86,7 +81,12 @@ int main(int argc, char* argv[]) {
         request_body["messages"].push_back(
             result["choices"][0]["message"]
         );
-
+        
+        if(result["choices"][0]["message"].contains("content") && 
+        result["choices"][0]["message"]["content"].is_string()) {
+            std::cout <<  result["choices"][0]["message"]["content"].get<std::string>();
+        }
+        
         for(auto tool_call: result["choices"][0]["message"]["tool_calls"]){
             std::string tool_name = tool_call["function"]["name"].get<std::string>();
             json tool_args = json::parse(tool_call["function"]["arguments"].get<std::string>());
@@ -103,12 +103,14 @@ int main(int argc, char* argv[]) {
                 if(!tr.success) std::cout << "TOOL FAIL: Write\n";
             }
             else if(tool_name == "Bash") {
-                tr = write_tool.execute(tool_args);
+                tr = bash_tool.execute(tool_args);
+                if(!tr.success) std::cout<<"Bash command failed\n";
             }
             else {
                 std::cerr << "Un-handeled tool: ";
-                std::cerr << tool_call["function"]["name"];
-                break;
+                std::cerr << tool_call["function"]["name"].get<std::string>();
+                std::cerr << std::endl;
+                tr.content = "Unknown tool called.";
             }
 
             request_body["messages"].push_back(
@@ -132,7 +134,7 @@ int main(int argc, char* argv[]) {
         result = json::parse(toolResponse.text);
     }
     
-    std::cout << result["choices"][0]["message"]["content"].get<std::string>();
+    std::cout << result["choices"][0]["message"]["content"].get<std::string>() << "\n";
 
     return 0;
 }
