@@ -7,7 +7,7 @@ void ToolRegistry::registerTool(Tool* tool){
 Tool* ToolRegistry::get(const std::string& name) const {
     if(!tools_map.count(name)){
         std::cerr << "Tool not registered: " << name;
-        throw std::domain_error("Tool not registereed.");
+        throw std::domain_error("Tool not registereed: " + name);
     }
 
     return tools_map.at(name);

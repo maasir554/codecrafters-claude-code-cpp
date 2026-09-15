@@ -2,13 +2,20 @@
 #include <iostream>
 #include <stdexcept>
 
-Agent::Agent(LLMClient& client, ToolRegistry& tools, int max_turns)
-    : _client(client), _tools(tools), _max_turns(max_turns) {
+Agent::Agent(LLMClient& client, ToolRegistry& tools, int max_turns, std::string sys_prompt)
+    : _client(client), _tools(tools), _max_turns(max_turns), _sys_prompt(sys_prompt) {
     if (max_turns <= 0) throw std::invalid_argument("max_turns must be positive");
 }
 
 void Agent::resetConversation() {
     _messages = json::array();
+    
+    if(!_sys_prompt.empty()) {
+        _messages.push_back({
+            {"role", "system"},
+            {"content", _sys_prompt}
+        });
+    }
 }
 
 std::string Agent::run(const std::string& prompt) {
